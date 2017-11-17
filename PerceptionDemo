@@ -1,0 +1,78 @@
+#coding=utf-8
+'''
+Created on 2017年11月16日
+
+@author: Administrator
+'''
+class perceptron:
+    def __init__(self,t,_iter):
+        self.w=[];
+        self.b=0;
+        self.t=t;
+        #self.pair={}
+        self.x=[];
+        self.y=[];
+        self.maxiter=_iter;
+    def prepare(self):
+        temp=[];
+        length=0;
+        with open("train",'r') as f:
+            for content in f:
+                contemp=[];
+                temp=content.split(' ');
+                length=len(temp);
+                self.y.append(int(temp[length-1]));
+                for i in range(0,length-1):
+                    contemp.append(int(temp[i]));
+                self.x.append(contemp);
+                #self.pair[contemp]=temp[length-1];#list不能被hash
+        for i in range(0,length-1):
+            self.w.append(0);
+        return;
+    
+    def IsWrongOrRight(self,key,value):
+        res=0;
+        length=len(key);
+        for i in range(0,length):
+#             print(self.w[i],key[i]);
+            res+=self.w[i]*key[i];
+        res+=self.b;
+        res=res*value;
+        if res > 0:
+            return False;
+        return True;
+    def updateparameter(self,key,value):
+        length=len(key);
+        for i in range(0,length):
+            self.w[i]=self.w[i]+self.t*key[i]*value;
+        self.b=self.b+self.t*value;
+        return;
+    def display(self):
+        length=len(self.w);
+        for i in range(0,length):
+            print(self.w[i],"*x%d+" %(i),end=' ');
+        print(self.b);
+        return;
+    def saveresult(self):
+        with open("result",'w') as f:
+            for content in self.w:
+                f.write(str(content)+' ');
+            f.write(str(self.b));
+            
+    def run(self):
+        for i in range(0,self.maxiter):
+            flag=False;
+            for key in self.x:
+                if self.IsWrongOrRight(key,self.y[self.x.index(key)]):
+                    flag=True;
+                    self.updateparameter(key,self.y[self.x.index(key)]);
+            if not flag:
+                return;
+        
+per=perceptron(1,1000);
+per.prepare();
+per.run();
+per.display();
+per.saveresult();
+        
+    
